@@ -1,3 +1,6 @@
+import copy
+
+
 class BlocksWorld:
     """
        Blocksworld tile puzzle as described in the AI coursework
@@ -10,16 +13,37 @@ class BlocksWorld:
        The goal of this game is to arrange the block according to the rule (goal state).
        """
 
-    def __init__(self, size, start_state):
+    def __init__(self, size, objects_pos):
         self.size = size
         self.board = [['' for x in range(size)] for x in range(size)]
         for row in range(size):
             for col in range(size):
-                self.board[row][col] = start_state.get(size * row + col + 1, ' ')
+                self.board[row][col] = objects_pos.get(size * row + col + 1, ' ')
                 if self.board[row][col] == 'X':
                     self.agent_location = row, col
 
+    def get_objects_pos(self, board, size):
+        pos = {}
+        for row in range(self.size):
+            for col in range(self.size):
+                if board[row][col] == 'A':
+                    pos[size * row + col + 1] = 'A'
+                elif board[row][col] == 'B':
+                    pos[size * row + col + 1] = 'B'
+                elif board[row][col] == 'C':
+                    pos[size * row + col + 1] = 'C'
+                elif board[row][col] == 'X':
+                    pos[size * row + col + 1] = 'X'
+        return pos
+
     def move(self, direction):
+        new_agent_loc = self.get_new_agent_location(direction)
+        old_value = self.board[self.agent_location[0]][self.agent_location[1]]
+        self.board[self.agent_location[0]][self.agent_location[1]] = self.board[new_agent_loc[0]][new_agent_loc[1]]
+        self.board[new_agent_loc[0]][new_agent_loc[1]] = old_value
+        self.agent_location = new_agent_loc
+
+    def get_new_agent_location(self, direction):
         if direction == 'UP':
             new_location = self.agent_location[0] - 1, self.agent_location[1]
         elif direction == 'DOWN':
@@ -30,11 +54,16 @@ class BlocksWorld:
             new_location = self.agent_location[0], self.agent_location[1] + 1
         else:
             raise ValueError('Invalid move')
+        return new_location
 
-        old_value = self.board[self.agent_location[0]][self.agent_location[1]]
-        self.board[self.agent_location[0]][self.agent_location[1]] = self.board[new_location[0]][new_location[1]]
-        self.board[new_location[0]][new_location[1]] = old_value
-        self.agent_location = new_location
+    def get_new_state(self, direction):
+        new_agent_loc = self.get_new_agent_location(direction)
+        new_board = copy.deepcopy(self.board)
+        old_value = new_board[self.agent_location[0]][self.agent_location[1]]
+        new_board[self.agent_location[0]][self.agent_location[1]] = new_board[new_agent_loc[0]][new_agent_loc[1]]
+        new_board[new_agent_loc[0]][new_agent_loc[1]] = old_value
+        new_obj_pos = self.get_objects_pos(new_board, self.size)
+        return BlocksWorld(self.size, new_obj_pos)
 
     def get_legal_move(self):
         legal_moves = []

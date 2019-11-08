@@ -6,6 +6,7 @@ from BlocksWorld import BlocksWorld
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+
 start_state = {
     13: "A",
     14: "B",

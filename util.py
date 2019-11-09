@@ -3,7 +3,6 @@ from collections import deque
 
 
 class Queue:
-    """FIFO queue"""
 
     def __init__(self):
         self.queue = deque()
@@ -19,7 +18,6 @@ class Queue:
 
 
 class Stack:
-    """LIFO stack"""
 
     def __init__(self):
         self.stack = []
@@ -35,20 +33,19 @@ class Stack:
 
 
 class PriorityQueue:
-    """ priority queue. """
 
     def __init__(self):
-        self.heap = []
+        self.queue = []
         self.count = 0
 
     def push(self, item, priority):
         entry = (priority, self.count, item)
-        heapq.heappush(self.heap, entry)
+        heapq.heappush(self.queue, entry)
         self.count += 1
 
     def pop(self):
-        (_, _, item) = heapq.heappop(self.heap)
+        (_, _, item) = heapq.heappop(self.queue)
         return item
 
-    def isEmpty(self):
-        return len(self.heap) == 0
+    def is_empty(self):
+        return len(self.queue) == 0

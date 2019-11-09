@@ -71,7 +71,7 @@ def a_star_search(problem, heuristic):
     initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
     fringe.push(initial_node, heuristic(problem.get_start_state()))
     while True:
-        if fringe.isEmpty():
+        if fringe.is_empty():
             return []
         node = fringe.pop()
         if problem.is_goal_state(node.state):

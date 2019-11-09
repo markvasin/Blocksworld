@@ -22,19 +22,23 @@ class BlocksWorld:
                 if self.board[row][col] == 'X':
                     self.agent_location = row, col
 
-    def get_objects_pos(self, board, size):
-        pos = {}
+        self.goal = {'A': (self.size - 3, self.size - 3), 'B': (self.size - 2, self.size - 3),
+                     'C': (self.size - 1, self.size - 3)}
+
+    def get_block_pos(self):
+        block_location = {}
         for row in range(self.size):
             for col in range(self.size):
-                if board[row][col] == 'A':
-                    pos[size * row + col + 1] = 'A'
-                elif board[row][col] == 'B':
-                    pos[size * row + col + 1] = 'B'
-                elif board[row][col] == 'C':
-                    pos[size * row + col + 1] = 'C'
-                elif board[row][col] == 'X':
-                    pos[size * row + col + 1] = 'X'
-        return pos
+                if self.board[row][col] == 'A':
+                    block_location['A'] = row, col
+                if self.board[row][col] == 'B':
+                    block_location['B'] = row, col
+                if self.board[row][col] == 'C':
+                    block_location['C'] = row, col
+        return block_location
+
+    def get_goal_state(self):
+        return self.goal
 
     def move(self, direction):
         new_agent_loc = self.get_new_agent_location(direction)
@@ -62,7 +66,7 @@ class BlocksWorld:
         old_value = new_board[self.agent_location[0]][self.agent_location[1]]
         new_board[self.agent_location[0]][self.agent_location[1]] = new_board[new_agent_loc[0]][new_agent_loc[1]]
         new_board[new_agent_loc[0]][new_agent_loc[1]] = old_value
-        new_obj_pos = self.get_objects_pos(new_board, self.size)
+        new_obj_pos = get_objects_pos(new_board, self.size)
         return BlocksWorld(self.size, new_obj_pos)
 
     def get_legal_move(self):
@@ -103,3 +107,18 @@ class BlocksWorld:
 
     def display_board(self):
         print(self.create_board_string())
+
+
+def get_objects_pos(board, size):
+    pos = {}
+    for row in range(size):
+        for col in range(size):
+            if board[row][col] == 'A':
+                pos[size * row + col + 1] = 'A'
+            elif board[row][col] == 'B':
+                pos[size * row + col + 1] = 'B'
+            elif board[row][col] == 'C':
+                pos[size * row + col + 1] = 'C'
+            elif board[row][col] == 'X':
+                pos[size * row + col + 1] = 'X'
+    return pos

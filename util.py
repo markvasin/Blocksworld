@@ -1,3 +1,4 @@
+import heapq
 from collections import deque
 
 
@@ -31,3 +32,23 @@ class Stack:
 
     def is_empty(self):
         return len(self.stack) == 0
+
+
+class PriorityQueue:
+    """ priority queue. """
+
+    def __init__(self):
+        self.heap = []
+        self.count = 0
+
+    def push(self, item, priority):
+        entry = (priority, self.count, item)
+        heapq.heappush(self.heap, entry)
+        self.count += 1
+
+    def pop(self):
+        (_, _, item) = heapq.heappop(self.heap)
+        return item
+
+    def isEmpty(self):
+        return len(self.heap) == 0

@@ -1,4 +1,5 @@
 import util
+import random
 from BlocksWorld import BlocksWorld
 from BlocksWorldProblem import BlocksWorldProblem
 from TreeNode import TreeNode
@@ -28,7 +29,9 @@ def depth_first_search(problem):
         node = fringe.pop()
         if problem.is_goal_state(node.state):
             return node.action
-        for new_node in problem.get_successors(node):
+        successors = problem.get_successors(node)
+        random.shuffle(successors)  # Randomise the order of expansion in DFS
+        for new_node in successors:
             fringe.push(new_node)
 
 
@@ -119,7 +122,8 @@ def create_blocks_world():
 blocks_world = create_blocks_world()
 blocks_world.display_board()
 search_problem = BlocksWorldProblem(blocks_world)
-path = a_star_search(search_problem, manhattan_heuristic)
+# path = a_star_search(search_problem, manhattan_heuristic)
+path = breadth_first_search(search_problem)
 print('Found result:', path)
 for p in path:
     print(p)

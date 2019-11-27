@@ -16,6 +16,8 @@ class Queue:
     def is_empty(self):
         return len(self.queue) == 0
 
+    def size(self):
+        return len(self.queue)
 
 class Stack:
 
@@ -30,6 +32,9 @@ class Stack:
 
     def is_empty(self):
         return len(self.stack) == 0
+
+    def size(self):
+        return len(self.stack)
 
 
 class PriorityQueue:
@@ -49,3 +54,6 @@ class PriorityQueue:
 
     def is_empty(self):
         return len(self.queue) == 0
+
+    def size(self):
+        return len(self.queue)

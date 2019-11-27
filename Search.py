@@ -2,33 +2,40 @@ import util
 import random
 from BlocksWorld import BlocksWorld
 from BlocksWorldProblem import BlocksWorldProblem
+from Solution import Solution
 from TreeNode import TreeNode
 
 
 def breadth_first_search(problem):
+    print('Running breadth-first search...')
+    node_expanded = 0
     fringe = util.Queue()
     initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
     fringe.push(initial_node)
     while True:
         if fringe.is_empty():
-            return []
+            return Solution([], node_expanded, -1, -1)  # No solution found
         node = fringe.pop()
+        node_expanded += 1
         if problem.is_goal_state(node.state):
-            return node.action
+            return Solution(node.action, node_expanded + fringe.size(), node.depth, node.cost)
         for new_node in problem.get_successors(node):
             fringe.push(new_node)
 
 
 def depth_first_search(problem):
+    print('Running depth-first search...')
+    node_expanded = 0
     fringe = util.Stack()
     initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
     fringe.push(initial_node)
     while True:
         if fringe.is_empty():
-            return []
+            return Solution([], node_expanded, -1, -1)  # No solution found
         node = fringe.pop()
+        node_expanded += 1
         if problem.is_goal_state(node.state):
-            return node.action
+            return Solution(node.action, node_expanded + fringe.size(), node.depth, node.cost)
         successors = problem.get_successors(node)
         random.shuffle(successors)  # Randomise the order of expansion in DFS
         for new_node in successors:
@@ -36,49 +43,58 @@ def depth_first_search(problem):
 
 
 def iterative_deepening_search(problem):
+    print('Running iterative deepening search...')
+    node_expanded = 0
     depth = 0
     while True:
         result = depth_limited_search(problem, depth)
-        if result != "cutoff":
-            return result
+        node_expanded += result.total_nodes
+        if result.path != "cutoff":
+            return Solution(result.path, node_expanded, result.depth, result.cost)
         depth += 1
 
 
 def depth_limited_search(problem, limit):
+    node_expanded = 0
     def recursive_dls(node):
+        nonlocal node_expanded
+        node_expanded += 1
         cutoff_occurred = False
         cutoff = "cutoff"
         failure = "fail"
         if problem.is_goal_state(node.state):
-            return node.action
+            return Solution(node.action, node_expanded, node.depth, node.cost)
         elif node.depth == limit:
-            return cutoff
+            return Solution(cutoff, node_expanded, node.depth, node.cost)
         else:
             for new_node in problem.get_successors(node):
                 result = recursive_dls(new_node)
-                if result == cutoff:
+                if result.path == cutoff:
                     cutoff_occurred = True
-                elif result != failure:
+                elif result.path != failure:
                     return result
         if cutoff_occurred:
-            return cutoff
+            return Solution(cutoff, node_expanded, node.depth, node.cost)
         else:
-            return failure
+            return Solution(failure, node_expanded, node.depth, node.cost)
 
     initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
     return recursive_dls(initial_node)
 
 
 def a_star_search(problem, heuristic):
+    print('Running A star heuristic search...')
+    node_expanded = 0
     fringe = util.PriorityQueue()
     initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
     fringe.push(initial_node, heuristic(problem.get_start_state()))
     while True:
         if fringe.is_empty():
-            return []
+            return Solution([], node_expanded, -1, -1)  # No solution found
         node = fringe.pop()
+        node_expanded += 1
         if problem.is_goal_state(node.state):
-            return node.action
+            return Solution(node.action, node_expanded + fringe.size(), node.depth, node.cost)
         for new_node in problem.get_successors(node):
             fringe.push(new_node, new_node.cost + heuristic(new_node.state))
 
@@ -93,6 +109,13 @@ def manhattan_heuristic(board):
 
 def manhattan_distance(xy1, xy2):
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+
+def print_path_grid(path):
+    for p in path:
+        print(p)
+        blocks_world.move(p)
+        blocks_world.display_board()
 
 
 def create_blocks_world():
@@ -111,10 +134,10 @@ def create_blocks_world():
     }
 
     start_state = {
-        13: "A",
-        14: "B",
-        15: "C",
-        16: "X"
+        10: "A",
+        9: "B",
+        14: "C",
+        11: "X"
     }
     return BlocksWorld(4, start_state)
 
@@ -122,10 +145,10 @@ def create_blocks_world():
 blocks_world = create_blocks_world()
 blocks_world.display_board()
 search_problem = BlocksWorldProblem(blocks_world)
-# path = a_star_search(search_problem, manhattan_heuristic)
-path = breadth_first_search(search_problem)
-print('Found result:', path)
-for p in path:
-    print(p)
-    blocks_world.move(p)
-    blocks_world.display_board()
+solution = a_star_search(search_problem, manhattan_heuristic)
+# solution = depth_first_search(search_problem)
+print('Found result:', solution.path)
+print('Total node generated:', solution.total_nodes)
+print('Depth of the solution:', solution.depth)
+print('Total cost from start to goal state:', solution.cost)
+# print_path_grid(solution.path)

@@ -111,6 +111,68 @@ def manhattan_distance(xy1, xy2):
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 
+def breadth_first_search_graph(problem):
+    print('Running breadth-first graph search...')
+    node_expanded = 0
+    closed = set()
+    fringe = util.Queue()
+    initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
+    fringe.push(initial_node)
+    while True:
+        if fringe.is_empty():
+            return Solution([], node_expanded, -1, -1)  # No solution found
+        node = fringe.pop()
+        node_expanded += 1
+        if problem.is_goal_state(node.state):
+            return Solution(node.action, node_expanded + fringe.size(), node.depth, node.cost)
+        if node.state not in closed:
+            closed.add(node.state)
+            for new_node in problem.get_successors(node):
+                fringe.push(new_node)
+
+
+def depth_first_search_graph(problem):
+    print('Running depth-first graph search...')
+    node_expanded = 0
+    closed = set()
+    fringe = util.Stack()
+    initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
+    fringe.push(initial_node)
+    while True:
+        if fringe.is_empty():
+            return Solution([], node_expanded, -1, -1)  # No solution found
+        node = fringe.pop()
+        node_expanded += 1
+        if problem.is_goal_state(node.state):
+            return Solution(node.action, node_expanded + fringe.size(), node.depth, node.cost)
+        if node.state not in closed:
+            closed.add(node.state)
+            successors = problem.get_successors(node)
+            random.shuffle(successors)  # Randomise the order of expansion in DFS
+            for new_node in successors:
+                fringe.push(new_node)
+
+
+def a_star_search_graph(problem, heuristic):
+    print('Running A star heuristic graph search...')
+    node_expanded = 0
+    closed = set()
+    fringe = util.PriorityQueue()
+    initial_node = TreeNode(problem.get_start_state(), None, 0, [], 0)
+    fringe.push(initial_node, heuristic(problem.get_start_state()))
+    while True:
+        if fringe.is_empty():
+            return Solution([], node_expanded, -1, -1)  # No solution found
+        node = fringe.pop()
+        node_expanded += 1
+        if problem.is_goal_state(node.state):
+            return Solution(node.action, node_expanded + fringe.size(), node.depth, node.cost)
+        if node.state not in closed:
+            closed.add(node.state)
+            for new_node in problem.get_successors(node):
+                fringe.push(new_node, new_node.cost + heuristic(new_node.state))
+
+
 def print_path_grid(path):
     for p in path:
         print(p)
@@ -145,8 +207,8 @@ def create_blocks_world():
 blocks_world = create_blocks_world()
 blocks_world.display_board()
 search_problem = BlocksWorldProblem(blocks_world)
-solution = a_star_search(search_problem, manhattan_heuristic)
-# solution = depth_first_search(search_problem)
+# solution = a_star_search(search_problem, manhattan_heuristic)
+solution = depth_first_search_graph(search_problem)
 print('Found result:', solution.path)
 print('Total node generated:', solution.total_nodes)
 print('Depth of the solution:', solution.depth)

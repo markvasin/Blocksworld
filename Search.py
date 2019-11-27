@@ -1,3 +1,5 @@
+import time
+
 import util
 import random
 from BlocksWorld import BlocksWorld
@@ -181,35 +183,31 @@ def print_path_grid(path):
 
 
 def create_blocks_world():
-    start_state_for_bfs = {
-        7: "A",
-        9: "B",
-        14: "C",
-        2: "X"
-    }
-
-    start_state_for_dfs = {
-        2: "A",
-        6: "B",
-        14: "C",
-        10: "X"
-    }
-
-    start_state = {
+    start_state_depth_4 = {
         10: "A",
         9: "B",
         14: "C",
         11: "X"
     }
-    return BlocksWorld(4, start_state)
+
+    start_state = {
+        13: "A",
+        14: "B",
+        15: "C",
+        16: "X"
+    }  # depth 14
+    return BlocksWorld(4, start_state_depth_4)
 
 
 blocks_world = create_blocks_world()
 blocks_world.display_board()
 search_problem = BlocksWorldProblem(blocks_world)
+start = time.time()
 # solution = a_star_search(search_problem, manhattan_heuristic)
-solution = depth_first_search_graph(search_problem)
+solution = depth_first_search(search_problem)
+end = time.time()
 print('Found result:', solution.path)
+print('Total elapse time in second:', end - start)
 print('Total node generated:', solution.total_nodes)
 print('Depth of the solution:', solution.depth)
 print('Total cost from start to goal state:', solution.cost)

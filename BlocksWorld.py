@@ -108,6 +108,15 @@ class BlocksWorld:
     def display_board(self):
         print(self.create_board_string())
 
+    def __eq__(self, other):
+        for row in range(self.size):
+            if self.board[row] != other.board[row]:
+                return False
+        return True
+
+    def __hash__(self):
+        return hash(str(self.board))
+
 
 def get_objects_pos(board, size):
     pos = {}

@@ -201,14 +201,14 @@ print('Total cost from start to goal state:', solution.cost)
 print_path_grid(solution.path)
 
 
-# Code to get the number of node generated with increasing problem difficulty
-nodes_generated = []
-for start in all_start_states:
-    blocks_world = BlocksWorld(grid_size, start)
-    search_problem = BlocksWorldProblem(blocks_world)
-    # blocks_world.display_board()
-    solution = depth_first_search(search_problem)
-    print('Found result:', solution.path)
-    print('Total node generated:', solution.total_nodes)
-    nodes_generated.append(solution.total_nodes)
-    print(nodes_generated)
+# # Code to get the number of node generated with increasing problem difficulty
+# nodes_generated = []
+# for start in all_start_states:
+#     blocks_world = BlocksWorld(grid_size, start)
+#     search_problem = BlocksWorldProblem(blocks_world)
+#     # blocks_world.display_board()
+#     solution = depth_first_search(search_problem)
+#     print('Found result:', solution.path)
+#     print('Total node generated:', solution.total_nodes)
+#     nodes_generated.append(solution.total_nodes)
+#     print(nodes_generated)

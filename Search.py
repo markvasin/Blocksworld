@@ -1,9 +1,10 @@
+import random
 import time
 
 import util
-import random
 from BlocksWorld import BlocksWorld
 from BlocksWorldProblem import BlocksWorldProblem
+from BlocksWorldStates import start_state, all_start_states
 from Solution import Solution
 from TreeNode import TreeNode
 
@@ -58,6 +59,7 @@ def iterative_deepening_search(problem):
 
 def depth_limited_search(problem, limit):
     node_expanded = 0
+
     def recursive_dls(node):
         nonlocal node_expanded
         node_expanded += 1
@@ -182,33 +184,31 @@ def print_path_grid(path):
         blocks_world.display_board()
 
 
-def create_blocks_world():
-    start_state_depth_4 = {
-        10: "A",
-        9: "B",
-        14: "C",
-        11: "X"
-    }
-
-    start_state = {
-        13: "A",
-        14: "B",
-        15: "C",
-        16: "X"
-    }  # depth 14
-    return BlocksWorld(4, start_state_depth_4)
-
-
-blocks_world = create_blocks_world()
+# Code to run the search problem
+grid_size = 4
+blocks_world = BlocksWorld(grid_size, start_state)
 blocks_world.display_board()
 search_problem = BlocksWorldProblem(blocks_world)
 start = time.time()
-# solution = a_star_search(search_problem, manhattan_heuristic)
-solution = depth_first_search(search_problem)
+solution = a_star_search(search_problem, manhattan_heuristic)
+# solution = depth_first_search(search_problem)
 end = time.time()
 print('Found result:', solution.path)
 print('Total elapse time in second:', end - start)
 print('Total node generated:', solution.total_nodes)
 print('Depth of the solution:', solution.depth)
 print('Total cost from start to goal state:', solution.cost)
-# print_path_grid(solution.path)
+print_path_grid(solution.path)
+
+
+# Code to get the number of node generated with increasing problem difficulty
+nodes_generated = []
+for start in all_start_states:
+    blocks_world = BlocksWorld(grid_size, start)
+    search_problem = BlocksWorldProblem(blocks_world)
+    # blocks_world.display_board()
+    solution = depth_first_search(search_problem)
+    print('Found result:', solution.path)
+    print('Total node generated:', solution.total_nodes)
+    nodes_generated.append(solution.total_nodes)
+    print(nodes_generated)
